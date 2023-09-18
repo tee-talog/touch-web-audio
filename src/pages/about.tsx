@@ -1,13 +1,13 @@
-import { Component, createEffect, Suspense } from 'solid-js';
-import { useRouteData } from '@solidjs/router';
-import type { AboutDataType } from './about.data';
+import { Component, createEffect, Suspense } from "solid-js"
+import { useRouteData } from "@solidjs/router"
+import type { AboutDataType } from "./about.data"
 
 export default function About() {
-  const name = useRouteData<AboutDataType>();
+  const name = useRouteData<AboutDataType>()
 
   createEffect(() => {
-    console.log(name());
-  });
+    console.log(name())
+  })
 
   return (
     <section class="bg-pink-100 text-gray-700 p-8">
@@ -22,5 +22,5 @@ export default function About() {
         </Suspense>
       </p>
     </section>
-  );
+  )
 }

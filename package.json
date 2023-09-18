@@ -6,7 +6,9 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "eslint": "eslint",
+    "prettier": "prettier"
   },
   "license": "MIT",
   "devDependencies": {

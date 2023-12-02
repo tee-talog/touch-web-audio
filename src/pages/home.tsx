@@ -1,10 +1,19 @@
 import { createSignal } from "solid-js"
+import { useAudio } from "../func/audio"
 
-export default function Home() {
+const { startSound, stopSound } = useAudio()
+
+const Home = () => {
   return (
     <section>
-      <button type="button">start</button>
-      <button type="button">stop</button>
+      <button type="button" onclick={startSound}>
+        start
+      </button>
+      <button type="button" onclick={stopSound}>
+        stop
+      </button>
     </section>
   )
 }
+
+export default Home

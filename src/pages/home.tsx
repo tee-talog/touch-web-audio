@@ -1,30 +1,66 @@
-import { createSignal } from "solid-js"
+import { For, createSignal } from "solid-js"
+import { useAudio } from "../modules/audio"
 
-export default function Home() {
-  const [count, setCount] = createSignal(0)
+const { startSound, stopSound, changePitch } = useAudio()
+
+const pitchName = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+]
+
+const Home = () => {
+  const [isPlaying, setPlaying] = createSignal(false)
+
+  const press = () => {
+    if (isPlaying()) {
+      return
+    }
+    setPlaying(true)
+    startSound()
+  }
+
+  // FIXME マウスとキーボード両方で鳴らしているとき、片方を離すと音が途切れる
+  const release = () => {
+    if (!isPlaying()) {
+      return
+    }
+    setPlaying(false)
+    stopSound()
+  }
 
   return (
-    <section class="bg-gray-100 text-gray-700 p-8">
-      <h1 class="text-2xl font-bold">Home</h1>
-      <p class="mt-4">This is the home page.</p>
+    <section>
+      <button
+        type="button"
+        onMouseDown={press}
+        onMouseUp={release}
+        onKeyDown={press}
+        onKeyUp={release}
+        onMouseLeave={release}
+      >
+        play
+      </button>
 
-      <div class="flex items-center space-x-2">
-        <button
-          class="border rounded-lg px-2 border-gray-900"
-          onClick={() => setCount(count() - 1)}
-        >
-          -
-        </button>
-
-        <output class="p-10px">Count: {count()}</output>
-
-        <button
-          class="border rounded-lg px-2 border-gray-900"
-          onClick={() => setCount(count() + 1)}
-        >
-          +
-        </button>
-      </div>
+      {/* FIXME UI と鳴る音の初期値が違う */}
+      <select
+        onChange={(ev) => {
+          changePitch(ev.currentTarget.value)
+        }}
+      >
+        <For each={pitchName}>{(n) => <option value={n}>{n}</option>}</For>
+      </select>
     </section>
   )
 }
+
+export default Home

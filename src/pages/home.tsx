@@ -51,6 +51,7 @@ const Home = () => {
         play
       </button>
 
+      {/* FIXME UI と鳴る音の初期値が違う */}
       <select
         onChange={(ev) => {
           changePitch(ev.currentTarget.value)

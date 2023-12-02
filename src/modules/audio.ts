@@ -36,10 +36,7 @@ const normalizedPitchName = [
 
 type PitchNameBase = (typeof pitchNameBase)[number]
 type KeySignature = (typeof keySignature)[number]
-type PitchName<
-  _PitchNameBase extends string = PitchNameBase,
-  _KeySignature extends string = "" | KeySignature,
-> = `${_PitchNameBase}${_KeySignature}`
+type PitchName = `${PitchNameBase}${"" | KeySignature}`
 
 const convertPitchNameToFrequency = (pitchName: PitchName, octave = 4) => {
   const [p, ..._ks] = pitchName

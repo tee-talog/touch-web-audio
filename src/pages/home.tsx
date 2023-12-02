@@ -6,11 +6,8 @@ const { startSound, stopSound } = useAudio()
 const Home = () => {
   return (
     <section>
-      <button type="button" onClick={startSound}>
-        start
-      </button>
-      <button type="button" onClick={stopSound}>
-        stop
+      <button type="button" onMouseDown={startSound} onMouseUp={stopSound}>
+        play
       </button>
     </section>
   )

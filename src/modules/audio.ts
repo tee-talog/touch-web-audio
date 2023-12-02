@@ -4,6 +4,58 @@ const releaseTime = 0.1
 const attackLevel = 1
 const sustainLevel = 0.7
 
+const keySignatureSharp = ["#", "♯"]
+const keySignatureFlat = ["b", "♭"]
+const keySignatureDoubleSharp = ["##", "𝄪"]
+const keySignatureDoubleFlat = ["bb", "𝄫"]
+const keySignatureNatural = ["♮"]
+
+const pitchNameBase = ["C", "D", "E", "F", "G", "A", "B"] as const
+
+const normalizedPickName = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+]
+
+type PitchNameBase = (typeof pitchNameBase)[number]
+type KeySignature = "#" | "♯" | "b" | "♭" | "##" | "𝄪" | "bb" | "𝄫" | "♮"
+type PitchName<
+  _PitchNameBase extends string = PitchNameBase,
+  _KeySignature extends string = "" | KeySignature,
+> = `${_PitchNameBase}${_KeySignature}`
+
+const convertPitchNameToFrequency = (pitchName: PitchName, octave = 4) => {
+  const [p, ..._ks] = pitchName
+  const ks = _ks.join("")
+
+  let index = normalizedPickName.indexOf(p)
+
+  if (ks === "" || keySignatureNatural.includes(ks)) {
+    // 調号なし
+    // NOP
+  } else if (keySignatureSharp.includes(ks)) {
+    index = (index + 1) % normalizedPickName.length
+  } else if (keySignatureFlat.includes(ks)) {
+    index = (index - 1) % normalizedPickName.length
+  } else if (keySignatureDoubleSharp.includes(ks)) {
+    index = (index + 2) % normalizedPickName.length
+  } else if (keySignatureDoubleFlat.includes(ks)) {
+    index = (index - 2) % normalizedPickName.length
+  }
+  const frequency = 440 * Math.pow(2, (octave * 12 + index - 57) / 12)
+  return frequency
+}
+
 export const useAudio = () => {
   // 初期化
   const audioContext = new AudioContext()
@@ -31,6 +83,7 @@ export const useAudio = () => {
 
   // 操作
   let isInit = false
+  // 再生
   const startSound = () => {
     // start() はユーザー入力に反応する必要がある
     if (!isInit) {
@@ -51,6 +104,7 @@ export const useAudio = () => {
     )
   }
 
+  // 停止
   const stopSound = () => {
     oscillatorPlayGainNode.gain.setValueAtTime(
       sustainLevel,
@@ -63,8 +117,14 @@ export const useAudio = () => {
     )
   }
 
+  // 音程の変更
+  const changePitch = (pitchName: PitchName) => {
+    oscillatorNode.frequency.value = convertPitchNameToFrequency(pitchName)
+  }
+
   return {
     startSound,
     stopSound,
+    changePitch,
   }
 }

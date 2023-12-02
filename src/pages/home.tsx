@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js"
 import { useAudio } from "../modules/audio"
 
-const { startSound, stopSound } = useAudio()
+const { startSound, stopSound, changePitch } = useAudio()
 
 const Home = () => {
   const [isPlaying, setPlaying] = createSignal(false)
@@ -34,6 +34,11 @@ const Home = () => {
         onMouseLeave={release}
       >
         play
+      </button>
+
+      {/* 仮 */}
+      <button type="button" onClick={() => changePitch("C")}>
+        change
       </button>
     </section>
   )

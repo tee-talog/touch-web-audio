@@ -78,7 +78,9 @@ export const useAudio = () => {
   })
   // 再生・停止をエミュレートする
   const oscillatorPlayGainNode = new GainNode(audioContext, { gain: 0 })
-  const gainNode = new GainNode(audioContext, { gain: 0.5 })
+  // チャンネルゲイン
+  const channelGainNode = new GainNode(audioContext, { gain: 0.5 })
+  // マスターボリューム
   const masterVolumeGainNode = new GainNode(audioContext, { gain: 0.2 })
 
   const lowpassFilter = new BiquadFilterNode(audioContext, {
@@ -90,8 +92,8 @@ export const useAudio = () => {
   // 接続
   oscillatorNode.connect(lowpassFilter)
   lowpassFilter.connect(oscillatorPlayGainNode)
-  oscillatorPlayGainNode.connect(gainNode)
-  gainNode.connect(masterVolumeGainNode)
+  oscillatorPlayGainNode.connect(channelGainNode)
+  channelGainNode.connect(masterVolumeGainNode)
   masterVolumeGainNode.connect(audioContext.destination)
 
   // 操作

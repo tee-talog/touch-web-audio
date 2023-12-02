@@ -122,11 +122,17 @@ export const useAudio = () => {
 
   // 停止
   const stopSound = () => {
+    // attack, decay の予定をキャンセル
+    oscillatorPlayGainNode.gain.cancelAndHoldAtTime(0)
+
+    // release
+    // 開始音量を設定
     oscillatorPlayGainNode.gain.setValueAtTime(
-      sustainLevel,
+      oscillatorPlayGainNode.gain.value,
       audioContext.currentTime,
     )
-    // release
+
+    // 減らしていく
     oscillatorPlayGainNode.gain.linearRampToValueAtTime(
       0,
       audioContext.currentTime + releaseTime,

@@ -82,17 +82,28 @@ export const useAudio = () => {
   const channelGainNode = new GainNode(audioContext, { gain: 0.5 })
   // マスターボリューム
   const masterVolumeGainNode = new GainNode(audioContext, { gain: 0.2 })
-
+  // ローパス
   const lowpassFilter = new BiquadFilterNode(audioContext, {
     type: "lowpass",
     frequency: 1000,
     Q: 10,
   })
+  // ディレイ
+  const delayNode = new DelayNode(audioContext, { delayTime: 0.2 })
+  const delayFeedbackNode = new GainNode(audioContext, { gain: 0.5 })
 
   // 接続
-  oscillatorNode.connect(lowpassFilter)
-  lowpassFilter.connect(oscillatorPlayGainNode)
-  oscillatorPlayGainNode.connect(channelGainNode)
+  oscillatorNode.connect(oscillatorPlayGainNode)
+  oscillatorPlayGainNode.connect(lowpassFilter)
+  // ローパスから、チャンネルゲインとディレイへ接続
+  lowpassFilter.connect(channelGainNode)
+  lowpassFilter.connect(delayNode)
+  // ディレイ内部接続
+  delayNode.connect(delayFeedbackNode)
+  delayFeedbackNode.connect(delayNode)
+  // ディレイからチャンネルゲインへの接続
+  delayNode.connect(channelGainNode)
+  // チャンネルゲインからマスターへ接続
   channelGainNode.connect(masterVolumeGainNode)
   masterVolumeGainNode.connect(audioContext.destination)
 

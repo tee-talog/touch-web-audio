@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js"
-import { useAudio } from "../func/audio"
+import { useAudio } from "../modules/audio"
 
+// TODO ユーザー入力があってから init する
 const { startSound, stopSound } = useAudio()
 
 const Home = () => {

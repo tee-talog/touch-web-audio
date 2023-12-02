@@ -1,7 +1,22 @@
-import { createSignal } from "solid-js"
+import { For, createSignal } from "solid-js"
 import { useAudio } from "../modules/audio"
 
 const { startSound, stopSound, changePitch } = useAudio()
+
+const pitchName = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+]
 
 const Home = () => {
   const [isPlaying, setPlaying] = createSignal(false)
@@ -36,10 +51,13 @@ const Home = () => {
         play
       </button>
 
-      {/* 仮 */}
-      <button type="button" onClick={() => changePitch("C")}>
-        change
-      </button>
+      <select
+        onChange={(ev) => {
+          changePitch(ev.currentTarget.value)
+        }}
+      >
+        <For each={pitchName}>{(n) => <option value={n}>{n}</option>}</For>
+      </select>
     </section>
   )
 }

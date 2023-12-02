@@ -4,15 +4,22 @@ const releaseTime = 0.1
 const attackLevel = 1
 const sustainLevel = 0.7
 
-const keySignatureSharp = ["#", "♯"]
-const keySignatureFlat = ["b", "♭"]
-const keySignatureDoubleSharp = ["##", "𝄪"]
-const keySignatureDoubleFlat = ["bb", "𝄫"]
-const keySignatureNatural = ["♮"]
+const keySignatureSharp = ["#", "♯"] as const
+const keySignatureFlat = ["b", "♭"] as const
+const keySignatureDoubleSharp = ["##", "𝄪"] as const
+const keySignatureDoubleFlat = ["bb", "𝄫"] as const
+const keySignatureNatural = ["♮"] as const
+const keySignature = [
+  ...keySignatureSharp,
+  ...keySignatureFlat,
+  ...keySignatureDoubleSharp,
+  ...keySignatureDoubleFlat,
+  ...keySignatureNatural,
+] as const
 
 const pitchNameBase = ["C", "D", "E", "F", "G", "A", "B"] as const
 
-const normalizedPickName = [
+const normalizedPitchName = [
   "C",
   "C#",
   "D",
@@ -28,7 +35,7 @@ const normalizedPickName = [
 ]
 
 type PitchNameBase = (typeof pitchNameBase)[number]
-type KeySignature = "#" | "♯" | "b" | "♭" | "##" | "𝄪" | "bb" | "𝄫" | "♮"
+type KeySignature = (typeof keySignature)[number]
 type PitchName<
   _PitchNameBase extends string = PitchNameBase,
   _KeySignature extends string = "" | KeySignature,
@@ -38,22 +45,31 @@ const convertPitchNameToFrequency = (pitchName: PitchName, octave = 4) => {
   const [p, ..._ks] = pitchName
   const ks = _ks.join("")
 
-  let index = normalizedPickName.indexOf(p)
+  let index = normalizedPitchName.indexOf(p)
 
-  if (ks === "" || keySignatureNatural.includes(ks)) {
+  if (ks === "" || keySignatureNatural.some((e) => e === ks)) {
     // 調号なし
     // NOP
-  } else if (keySignatureSharp.includes(ks)) {
-    index = (index + 1) % normalizedPickName.length
-  } else if (keySignatureFlat.includes(ks)) {
-    index = (index - 1) % normalizedPickName.length
-  } else if (keySignatureDoubleSharp.includes(ks)) {
-    index = (index + 2) % normalizedPickName.length
-  } else if (keySignatureDoubleFlat.includes(ks)) {
-    index = (index - 2) % normalizedPickName.length
+  } else if (keySignatureSharp.some((e) => e === ks)) {
+    index = (index + 1) % normalizedPitchName.length
+  } else if (keySignatureFlat.some((e) => e === ks)) {
+    index = (index - 1) % normalizedPitchName.length
+  } else if (keySignatureDoubleSharp.some((e) => e === ks)) {
+    index = (index + 2) % normalizedPitchName.length
+  } else if (keySignatureDoubleFlat.some((e) => e === ks)) {
+    index = (index - 2) % normalizedPitchName.length
   }
   const frequency = 440 * Math.pow(2, (octave * 12 + index - 57) / 12)
   return frequency
+}
+
+const isPitchName = (str: string): str is PitchName => {
+  const [p, ..._ks] = str
+  const ks = _ks.join("")
+  return (
+    pitchNameBase.some((e) => e === p) &&
+    ["", ...keySignature].some((e) => e === ks)
+  )
 }
 
 export const useAudio = () => {
@@ -118,7 +134,11 @@ export const useAudio = () => {
   }
 
   // 音程の変更
-  const changePitch = (pitchName: PitchName) => {
+  const changePitch = (pitchName: string) => {
+    if (!isPitchName(pitchName)) {
+      // TODO エラー処理？
+      return
+    }
     oscillatorNode.frequency.value = convertPitchNameToFrequency(pitchName)
   }
 
